@@ -1,7 +1,6 @@
 package br.edu.utfpr.calculaimc
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -11,6 +10,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import java.text.NumberFormat
+import java.util.Locale
 import kotlin.math.pow
 
 class MainActivity : AppCompatActivity() {//fim da classe MainActivity
@@ -37,20 +38,13 @@ class MainActivity : AppCompatActivity() {//fim da classe MainActivity
 
 
         btLimpar.setOnLongClickListener {
-            Toast.makeText(this, "Limpar Tela", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.limpar_tela), Toast.LENGTH_SHORT).show()
             false
         }
 
         btLimpar.setOnClickListener {
             limparTela()
         }
-
-        Log.e( "onCreate()", "msg de erro" )
-        Log.i( "onCreate()", "msg de info" )
-        Log.w( "onCreate()", "msg de warning" )
-        Log.d( "onCreate()", "msg de debug" )
-        Log.wtf( "onCreate()", "msg de wtc" )
-
 
 
     }//fim do método onCreate()
@@ -59,7 +53,7 @@ class MainActivity : AppCompatActivity() {//fim da classe MainActivity
     fun limparTela() {
         etPeso.setText( "" )
         etAltura.setText( "" )
-        tvResultado.setText("0.0")
+        tvResultado.setText(getString(R.string.zeros))
         etPeso.requestFocus()
     }
 
@@ -67,23 +61,36 @@ class MainActivity : AppCompatActivity() {//fim da classe MainActivity
         //entrada
         val peso = etPeso.text.toString().toDoubleOrNull()
         val altura = etAltura.text.toString().toDoubleOrNull()
-        var resultado : Double = 0.0
+        var resultado = 0.0
 
         if ( peso == null ) {
-            etPeso.setError( "O campo peso deve ser preenchido.")
+            etPeso.setError(getString(R.string.erro_peso))
             return
         }
 
         if ( altura == null ) {
-            etAltura.setError( "O campo altura deve ser preenchido.")
+            etAltura.setError(getString(R.string.erro_altura))
             return
         }
 
+        if ( Locale.getDefault().language == "en" ) {
+            resultado = 703 * ( peso / altura.pow(2) )
+            val nf = NumberFormat.getInstance(Locale.US)
+            val df = nf as java.text.DecimalFormat
+            tvResultado.text = df.format(resultado)
+        } else {
+            resultado = peso / altura.pow(2)
+            tvResultado.text = "%.2f".format(resultado)
+        }
+
+
         //processamento
-        resultado = peso / altura.pow(2)
+
 
         //saída
-        tvResultado.text = "%.2f".format(resultado)
+
+
+
 
     }
 
